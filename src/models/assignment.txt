@@ -1,0 +1,349 @@
+Tech Assignment: Return and Exchange Management System
+Objective:
+The goal of this assignment is to implement a backend service for managing Return
+and Exchange requests for an e-commerce platform. The solution should use the
+following tech stack:
+
+
+● Backend: Node.js with Express.js
+● ORM: Sequelize
+● Database: Schema code present in the end of this doc
+
+
+However, you should focus on return & exchange.
+
+Business Logic
+
+1. Request Creation:
+○ Customers can raise a return/exchange request.
+○ The request is reected to both the seller and the admin, alongwith
+customer app & web.
+
+TO CREATE SELLER AND ADMIN ROUTE 
+
+
+
+2. 
+A. Seller Action Return :
+
+○ The seller has 24 hours to either accept or reject the request.pond 
+○ The seller also species whether the return is required or not.
+○ If the seller does not reswithin 24 hours, the admin takes over.
+
+B. Seller Action Exchange :
+○ The seller has 24 hours to either accept or reject the request.
+○ The seller provides a reason for their decision.
+○ If the seller does not respond within 24 hours, the admin takes over.
+
+
+3. Admin Review:
+○ Admin reviews the request after the seller updates or after 24 hours.
+○ Admin's decision (approve/reject) is final.
+
+4. A. Return Flow:
+○ Approved + Return Required: A reverse pickup is scheduled, and a
+refund is issued after the pickup is completed.
+○ Approved + Return Not Required: Refund is issued directly.
+○ Rejected: A regret response is sent to the customer with the status
+updated.
+
+
+B. Exchange Flow:
+○ Approved: A reverse pickup is scheduled, and a tracking link is updated.
+○ Rejected: A regret response is sent to the customer with the reason and
+status updated.
+
+
+5. Communication:
+○ Update the request status throughout the process.
+○ Admin’s nal decision is communicated to both the seller and the
+customer via email.
+
+Requirements
+1. Routes
+○ CRUD operations for handling return and exchange requests based on
+the business logics.
+
+○ Routes for customer, seller, and admin actions.
+
+2. Database Models
+○ Implement Sequelize models for managing requests.
+○ Schema attached in annexure for reference
+
+3. Business Logic
+○ As outlined above
+
+4. Error Handling & Validations
+○ Validate all inputs (e.g., reason for rejection, customer details).
+○ Handle edge cases (e.g., missing data, invalid status transitions).
+
+5. Documentation
+○ API documentation using tools Postman (optional but encouraged).
+
+6. Testing
+○ Basic unit tests for core business logic.
+
+Deliverables
+1. Source code in a GitHub repository with ReadME
+2. Screen recording of the deployment on Loom
+3. Postman API Collection
+4. Deployed Link
+
+
+
+
+Database Schema
+Tables Required:
+
+CREATE TABLE `order_exchanges` (
+`id` int NOT NULL AUTO_INCREMENT,
+`order_id` int NOT NULL,
+`product_id` int NOT NULL,
+`exchange_quantity` int NOT NULL,
+`exchange_amount` decimal(10,2) NOT NULL,
+`taxes` decimal(10,2) DEFAULT '0.00',
+`discount` decimal(10,2) DEFAULT '0.00',
+`total_amount` decimal(10,2) NOT NULL,
+`status` enum('Pending','Processed','Cancelled') COLLATE utf8mb4_general_ci
+DEFAULT 'Pending',
+`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+KEY `order_id` (`order_id`),
+KEY `product_id` (`product_id`),
+CONSTRAINT `order_exchanges_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES
+`orders` (`id`),
+CONSTRAINT `order_exchanges_ibfk_2` FOREIGN KEY (`product_id`)
+REFERENCES `products` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `order_returns` (
+`id` int NOT NULL AUTO_INCREMENT,
+`order_id` int NOT NULL,
+`product_id` int NOT NULL,
+`return_quantity` int NOT NULL,
+`return_amount` decimal(10,2) NOT NULL,
+`taxes` decimal(10,2) DEFAULT '0.00',
+`discount` decimal(10,2) DEFAULT '0.00',
+`total_amount` decimal(10,2) NOT NULL,
+`status` enum('Pending','Approved','Rejected') COLLATE utf8mb4_general_ci
+DEFAULT 'Pending',
+`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+KEY `order_id` (`order_id`),
+KEY `product_id` (`product_id`),
+CONSTRAINT `order_returns_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES
+`orders` (`id`),
+CONSTRAINT `order_returns_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES
+`products` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+CREATE TABLE `users` (
+`id` int unsigned NOT NULL AUTO_INCREMENT,
+`role_id` int unsigned NOT NULL,
+`name` varchar(191) COLLATE utf8mb3_unicode_ci NOT NULL,
+`email` varchar(191) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`email_verify_token` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`is_email` tinyint(1) NOT NULL DEFAULT '0',
+`is_phone` tinyint(1) NOT NULL DEFAULT '0',
+`phone` varchar(20) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`otp` varchar(6) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`password` varchar(191) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`is_active` tinyint(1) DEFAULT '0',
+`status` tinyint NOT NULL DEFAULT '0',
+`referral_code` varchar(20) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`phone_veried_at` timestamp NULL DEFAULT NULL,
+`email_veried_at` timestamp NULL DEFAULT NULL,
+`remember_token` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`reset_token` varchar(200) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`reset_token_expiry` bigint DEFAULT NULL,
+`created_at` timestamp NULL DEFAULT NULL,
+`updated_at` timestamp NULL DEFAULT NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY `id` (`id`),
+KEY `fk_users_roles_idx` (`role_id`),
+CONSTRAINT `fk_users_roles` FOREIGN KEY (`role_id`) REFERENCES `user_roles`
+(`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb3
+COLLATE=utf8mb3_unicode_ci;
+
+
+
+CREATE TABLE `discounts_charges` (
+`id` int NOT NULL AUTO_INCREMENT,
+`order_id` int NOT NULL,
+`product_id` int NOT NULL,
+`coupon_discount` decimal(10,2) DEFAULT '0.00',
+`bank_discount` decimal(10,2) DEFAULT '0.00',
+`no_return_discount` decimal(10,2) DEFAULT '0.00',
+`cod_charges` decimal(10,2) DEFAULT '0.00',
+`shipping_charges` decimal(10,2) DEFAULT '0.00',
+`packing_charges` decimal(10,2) DEFAULT '0.00',
+`handling_charges` decimal(10,2) DEFAULT '0.00',
+`net_amount` decimal(10,2) DEFAULT '0.00',
+`gross_amount` decimal(10,2) NOT NULL,
+`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+KEY `idx_order_id` (`order_id`),
+KEY `idx_product_id` (`product_id`),
+CONSTRAINT `discounts_charges_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES
+`orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT `discounts_charges_ibfk_2` FOREIGN KEY (`product_id`)
+REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+CREATE TABLE `products` (
+`id` int NOT NULL AUTO_INCREMENT,
+`user_id` int NOT NULL,
+`item_id` int NOT NULL,
+`product_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+`brand_id` int DEFAULT NULL,
+`packed_weight` decimal(10,2) DEFAULT NULL,
+`package_length` decimal(10,2) DEFAULT NULL,
+`package_breadth` decimal(10,2) DEFAULT NULL,
+`package_height` decimal(10,2) DEFAULT NULL,
+`volumetric_weight` decimal(10,2) DEFAULT NULL,
+`chargeable_weight` decimal(10,2) DEFAULT NULL,
+`is_made_in_india` tinyint(1) DEFAULT '0',
+`is_hand_made` tinyint(1) DEFAULT '0',
+`is_cash_on_delivery` tinyint(1) DEFAULT '0',
+`is_customizable_product` tinyint(1) DEFAULT '0',
+`delivery_by` tinyint(1) DEFAULT '1' COMMENT '1- Shipping by IndiaZona, 0-
+Shipping by Vendor',
+`return_policy_id` tinyint(1) DEFAULT NULL,
+`exchange_policy_id` tinyint(1) DEFAULT NULL,
+`hsn_code_id` int DEFAULT NULL,
+`gst` decimal(5,2) DEFAULT NULL,
+`tag_price` decimal(10,2) DEFAULT NULL,
+`iz_commission` decimal(5,2) DEFAULT NULL,
+`no_return_discount` double(8,2) DEFAULT '0.00',
+`insurance_premium` tinyint(1) DEFAULT '0',
+`variant_type` tinyint(1) DEFAULT '0',
+`minimum_purchase_quantity` int DEFAULT '1',
+`low_stock_quantity_warning` int DEFAULT '0',
+`product_description` text COLLATE utf8mb4_general_ci,
+`product_specication` text COLLATE utf8mb4_general_ci,
+`thumbnail_image_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+`pdf_specication_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+`video_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+`is_active` tinyint(1) DEFAULT '1',
+`created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+UNIQUE KEY `user_id` (`user_id`),
+KEY `hsn_code_id` (`hsn_code_id`),
+KEY `brand_id` (`brand_id`),
+CONSTRAINT `products_ibfk_1` FOREIGN KEY (`hsn_code_id`) REFERENCES
+`hsn_codes` (`id`),
+CONSTRAINT `products_ibfk_2` FOREIGN KEY (`brand_id`) REFERENCES
+`brands` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci;
+
+
+
+CREATE TABLE `tax_amounts` (
+`id` int NOT NULL AUTO_INCREMENT,
+`order_id` int NOT NULL,
+`product_id` int NOT NULL,
+`cgst_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+`sgst_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+`igst_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+`transaction_type` enum('Intra','Inter') COLLATE utf8mb4_general_ci NOT NULL,
+`tax_amount_id` int NOT NULL,
+`created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+KEY `idx_order_id` (`order_id`),
+KEY `idx_product_id` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+CREATE TABLE `user_roles` (
+`id` int unsigned NOT NULL AUTO_INCREMENT,
+`type` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+`is_active` tinyint(1) DEFAULT '1',
+`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci;
+
+
+
+CREATE TABLE `user_addresses` (
+`id` int unsigned NOT NULL AUTO_INCREMENT,
+`manager_name` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`phone` varchar(20) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`user_id` int unsigned NOT NULL,
+`address` varchar(300) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`landmark` varchar(200) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`state_id` varchar(30) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`city_id` varchar(30) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+`postal_code` varchar(20) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+PRIMARY KEY (`id`),
+KEY `user_id` (`user_id`),
+CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES
+`users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3
+COLLATE=utf8mb3_unicode_ci;
+
+
+
+
+
+CREATE TABLE `product_orders` (
+`id` int NOT NULL AUTO_INCREMENT,
+`product_id` int NOT NULL,
+`order_id` int NOT NULL,
+`quantity` int NOT NULL,
+`tax_amount_id` int NOT NULL,
+`transaction_type` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+`place_of_supply` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+`logistics_tracking_link` text COLLATE utf8mb4_general_ci,
+`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+KEY `idx_order_id` (`order_id`),
+KEY `idx_product_id` (`product_id`),
+KEY `tax_amount_id` (`tax_amount_id`),
+CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES
+`orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES
+`products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT `product_orders_ibfk_1` FOREIGN KEY (`tax_amount_id`)
+REFERENCES `tax_amounts` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+
+CREATE TABLE `logistics_rates` (
+`id` int NOT NULL AUTO_INCREMENT,
+`mode` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+`weight` double NOT NULL,
+`zone_a` double NOT NULL,
+`zone_b` double NOT NULL,
+`zone_c` double NOT NULL,
+`zone_d` double NOT NULL,
+`zone_e` double NOT NULL,
+`created_at` datetime NOT NULL,
+`updated_at` datetime NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

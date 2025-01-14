@@ -3,6 +3,8 @@ const sequelize = require('./src/config/database'); // Import Sequelize instance
 const userRoutes = require('./src/routes/userRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
 const orderReturnRoutes = require('./src/routes/orderReturnRoutes');
+const customerRoutes = require('./src/routes/customerRoutes');
+const sellerRoutes = require('./src/routes/sellerRoutes');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
@@ -37,5 +39,8 @@ app.get('/', (req, res) => {
   res.send('Welcome to the API!');
 });
 
+app.use('/api/customers', customerRoutes);  
+
+app.use('/api/sellers', sellerRoutes);
 
 module.exports = app;

@@ -10,7 +10,7 @@ const Request = sequelize.define('Request', {
   },
   customerId: { type: DataTypes.INTEGER, allowNull: false },
   productId: { type: DataTypes.INTEGER, allowNull: false },
-  type: { type: DataTypes.ENUM('return', 'exchange'), allowNull: false },
+  type: { type: DataTypes.ENUM('Return', 'Exchange'), allowNull: false },
   status: {
     type: DataTypes.ENUM('pending', 'approved', 'rejected'),
     defaultValue: 'pending',

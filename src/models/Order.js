@@ -1,13 +1,15 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Import your database configuration
+const OrderReturns = require('./orderReturns');
+const OrderExchange = require('./orderExchange');
 
 module.exports = (sequelize) => {
   class Order extends Model {
     static associate(models) {
       // Define association with User
       Order.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-      // Define association with OrderItem
-      Order.hasMany(models.OrderItem, { foreignKey: 'order_id', as: 'items' });
+      Order.hasMany(models.OrderReturns, { foreignKey: 'order_id', as: 'returns' });
+      Order.hasMany(models.OrderExchange, { foreignKey: 'order_id', as: 'exchanges' });
     }
   }
 
@@ -43,6 +45,10 @@ module.exports = (sequelize) => {
       discounts_charges_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+          model: 'discounts_charges',
+          key: 'id',
+        },
       },
       created_at: {
         type: DataTypes.DATE,
@@ -64,6 +70,11 @@ module.exports = (sequelize) => {
       updatedAt: 'updated_at',
     }
   );
+
+  Order.hasMany(OrderReturns, { foreignKey: 'order_id', onDelete: 'CASCADE' });
+  OrderReturns.belongsTo(Order, { foreignKey: 'order_id' });
+  Order.hasMany(OrderExchange, { foreignKey: 'order_id', onDelete: 'CASCADE' });
+  OrderExchange.belongsTo(Order, { foreignKey: 'order_id' });
 
   return Order;
 };

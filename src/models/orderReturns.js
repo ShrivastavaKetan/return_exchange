@@ -1,28 +1,17 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Adjust the path as necessary
 
-class OrderReturns extends Model {}
-
-OrderReturns.init({
+const OrderReturn = sequelize.define('order_returns', {
     id: {
         type: DataTypes.INTEGER,
-        autoIncrement: true,
         primaryKey: true,
-        allowNull: false
+        autoIncrement: true
     },
-    order_id: {
+    request_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'orders', // Name of the referenced model
-            key: 'id'
-        }
-    },
-    product_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'products', // Name of the referenced model
+            model: 'return_exchange_requests', // Adjust the model name if necessary
             key: 'id'
         }
     },
@@ -31,43 +20,69 @@ OrderReturns.init({
         allowNull: false
     },
     return_amount: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false
+        type: DataTypes.REAL,
+        defaultValue: 0.00
     },
     taxes: {
-        type: DataTypes.DECIMAL(10, 2),
-        defaultValue: '0.00'
+        type: DataTypes.REAL,
+        defaultValue: 0.00
     },
     discount: {
-        type: DataTypes.DECIMAL(10, 2),
-        defaultValue: '0.00'
+        type: DataTypes.REAL,
+        defaultValue: 0.00
     },
     total_amount: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false
+        type: DataTypes.REAL,
+        defaultValue: 0.00
     },
-    status: {
-        type: DataTypes.ENUM('Pending', 'Approved', 'Rejected'),
+    return_reason: {
+        type: DataTypes.TEXT,
+        defaultValue: "NA"
+    },
+    admin_decision: {
+        type: DataTypes.TEXT,
+        validate: {
+            isIn: [['Approved', 'Rejected', 'Escalated']]
+        },
+        defaultValue: null
+    },
+    seller_decision: {
+        type: DataTypes.TEXT,
+        validate: {
+            isIn: [['Accepted', 'Rejected', 'Pending']]
+        },
+        defaultValue: null
+    },
+    refund_status: {
+        type: DataTypes.TEXT,
+        validate: {
+            isIn: [['Pending', 'Initiated', 'Issued']]
+        },
         defaultValue: 'Pending'
+    },
+    return_pickup_status: {
+        type: DataTypes.TEXT,
+        validate: {
+            isIn: [['Scheduled', 'In Transit', 'Completed']]
+        },
+        defaultValue: null
+    },
+    return_tracking_id: {
+        type: DataTypes.TEXT,
+        defaultValue: null
     },
     created_at: {
         type: DataTypes.DATE,
-        allowNull: false,
         defaultValue: DataTypes.NOW
     },
     updated_at: {
         type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-        onUpdate: DataTypes.NOW
+        defaultValue: DataTypes.NOW
     }
 }, {
     sequelize,
     modelName: 'OrderReturns',
-    tableName: 'order_returns',
-    timestamps: false,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    timestamps: false // Set to true if you want Sequelize to manage createdAt and updatedAt
 });
 
-module.exports = OrderReturns; 
+module.exports = OrderReturn; 

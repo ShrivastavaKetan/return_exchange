@@ -1,0 +1,809 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Return_Exchange",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [],
+  "paths": {
+    "/localhost:3000/api/users/": {
+      "get": {
+        "summary": "GetAllUsers",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/users/2": {
+      "get": {
+        "summary": "GetUserByID",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/customers/requests": {
+      "post": {
+        "summary": "CustomerCreateReturnRequest",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "integer"
+                  },
+                  "orderId": {
+                    "type": "integer"
+                  },
+                  "productId": {
+                    "type": "integer"
+                  },
+                  "requestType": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "orderId",
+                  "productId",
+                  "requestType"
+                ]
+              },
+              "example": {
+                "userId": 1,
+                "orderId": 1,
+                "productId": 1,
+                "requestType": "Return"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "created_at": {
+                          "type": "string"
+                        },
+                        "updated_at": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "integer"
+                        },
+                        "user_id": {
+                          "type": "integer"
+                        },
+                        "order_id": {
+                          "type": "integer"
+                        },
+                        "product_id": {
+                          "type": "integer"
+                        },
+                        "request_type": {
+                          "type": "string"
+                        },
+                        "request_status": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "created_at",
+                        "updated_at",
+                        "id",
+                        "user_id",
+                        "order_id",
+                        "product_id",
+                        "request_type",
+                        "request_status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Success",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "created_at": "2025-01-13T17:36:38.523Z",
+                        "updated_at": "2025-01-13T17:36:38.523Z",
+                        "id": 3,
+                        "user_id": 1,
+                        "order_id": 1,
+                        "product_id": 1,
+                        "request_type": "Return",
+                        "request_status": "Pending"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/users/create": {
+      "post": {
+        "summary": "CreateUser",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              },
+              "example": "{\n    \"role_id\": 2, // Example role ID\n    \"name\": \"Customer 1 \", // Example name\n    \"email\": \"customer.doe@example.com\", // Example email\n    \"email_verify_token\": \"some_token\", // Example token\n    \"is_email\": true, // Example boolean\n    \"is_phone\": true, // Example boolean\n    \"phone\": \"199-7890-123\", // Example phone number\n    \"otp\": \"123456\", // Example OTP\n    \"password\": \"securePassword123\", // Example password\n    \"is_active\": true, // Example boolean\n    \"status\": \"active\", // Example status\n    \"referral_code\": \"REF123\", // Example referral code\n    \"phone_veried_at\": null, // Example timestamp or null\n    \"email_veried_at\": null, // Example timestamp or null\n    \"remember_token\": null, // Example token or null\n    \"reset_token\": null, // Example token or null\n    \"reset_token_expiry\": null, // Example timestamp or null\n    \"created_at\": \"2023-10-01T12:00:00Z\", // Example timestamp\n    \"updated_at\": \"2023-10-01T12:00:00Z\" // Example timestamp\n}"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/orders/": {
+      "post": {
+        "summary": "CreateOrder",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "product_id": {
+                    "type": "integer"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "payment_status": {
+                    "type": "string"
+                  },
+                  "payment_mode": {
+                    "type": "string"
+                  },
+                  "discounts_charges_id": {
+                    "type": "integer"
+                  },
+                  "order_number": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "user_id",
+                  "product_id",
+                  "status",
+                  "payment_status",
+                  "payment_mode",
+                  "discounts_charges_id",
+                  "order_number"
+                ]
+              },
+              "example": {
+                "user_id": 1,
+                "product_id": 123,
+                "status": "Pending",
+                "payment_status": "Pending",
+                "payment_mode": "Card",
+                "discounts_charges_id": 1,
+                "order_number": "ORD-2023-001"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/customers/requests/3": {
+      "get": {
+        "summary": "CustomerGetReturnRequestsByID",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "user_id": {
+                          "type": "integer"
+                        },
+                        "order_id": {
+                          "type": "integer"
+                        },
+                        "product_id": {
+                          "type": "integer"
+                        },
+                        "request_type": {
+                          "type": "string"
+                        },
+                        "request_status": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string"
+                        },
+                        "updated_at": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "user_id",
+                        "order_id",
+                        "product_id",
+                        "request_type",
+                        "request_status",
+                        "created_at",
+                        "updated_at"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Success",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 3,
+                        "user_id": 1,
+                        "order_id": 1,
+                        "product_id": 1,
+                        "request_type": "Return",
+                        "request_status": "Pending",
+                        "created_at": "2025-01-13 17:36:38.523 +00:00",
+                        "updated_at": "2025-01-13 17:36:38.523 +00:00"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/orders": {
+      "get": {
+        "summary": "GetAllOrders",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/customers/requests": {
+      "get": {
+        "summary": "CustomerGetAllReturnRequests",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "user_id": {
+                            "type": "integer"
+                          },
+                          "order_id": {
+                            "type": "integer"
+                          },
+                          "product_id": {
+                            "type": "integer"
+                          },
+                          "request_type": {
+                            "type": "string"
+                          },
+                          "request_status": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "updated_at": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "user_id",
+                          "order_id",
+                          "product_id",
+                          "request_type",
+                          "request_status",
+                          "created_at",
+                          "updated_at"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Success",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 1,
+                          "user_id": 1,
+                          "order_id": 1,
+                          "product_id": 1,
+                          "request_type": "Return",
+                          "request_status": "Pending",
+                          "created_at": "2025-01-13 15:50:34",
+                          "updated_at": "2025-01-13 15:50:34"
+                        },
+                        {
+                          "id": 2,
+                          "user_id": 2,
+                          "order_id": 2,
+                          "product_id": 2,
+                          "request_type": "Exchange",
+                          "request_status": "In Progress",
+                          "created_at": "2025-01-13 15:50:34",
+                          "updated_at": "2025-01-13 15:50:34"
+                        },
+                        {
+                          "id": 3,
+                          "user_id": 1,
+                          "order_id": 1,
+                          "product_id": 1,
+                          "request_type": "Return",
+                          "request_status": "Pending",
+                          "created_at": "2025-01-13 17:36:38.523 +00:00",
+                          "updated_at": "2025-01-13 17:36:38.523 +00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/orders/1": {
+      "get": {
+        "summary": "GetOrderById",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/sellers/requests": {
+      "get": {
+        "summary": "SellersGetAllRequests",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "user_id": {
+                            "type": "integer"
+                          },
+                          "order_id": {
+                            "type": "integer"
+                          },
+                          "product_id": {
+                            "type": "integer"
+                          },
+                          "request_type": {
+                            "type": "string"
+                          },
+                          "request_status": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "updated_at": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "user_id",
+                          "order_id",
+                          "product_id",
+                          "request_type",
+                          "request_status",
+                          "created_at",
+                          "updated_at"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Success",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 1,
+                          "user_id": 1,
+                          "order_id": 1,
+                          "product_id": 1,
+                          "request_type": "Return",
+                          "request_status": "Pending",
+                          "created_at": "2025-01-13 15:50:34",
+                          "updated_at": "2025-01-13 15:50:34"
+                        },
+                        {
+                          "id": 2,
+                          "user_id": 2,
+                          "order_id": 2,
+                          "product_id": 2,
+                          "request_type": "Exchange",
+                          "request_status": "In Progress",
+                          "created_at": "2025-01-13 15:50:34",
+                          "updated_at": "2025-01-13 15:50:34"
+                        },
+                        {
+                          "id": 3,
+                          "user_id": 1,
+                          "order_id": 1,
+                          "product_id": 1,
+                          "request_type": "Return",
+                          "request_status": "Pending",
+                          "created_at": "2025-01-13 17:36:38.523 +00:00",
+                          "updated_at": "2025-01-13 17:36:38.523 +00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/order-returns/admin/review-return/1": {
+      "post": {
+        "summary": "AdminReview",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              },
+              "example": {
+                "status": "Approved"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/localhost:3000/api/order-returns": {
+      "post": {
+        "summary": "CreateOrderReturn",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "order_id": {
+                    "type": "integer"
+                  },
+                  "product_id": {
+                    "type": "integer"
+                  },
+                  "return_quantity": {
+                    "type": "integer"
+                  },
+                  "return_amount": {
+                    "type": "integer"
+                  },
+                  "taxes": {
+                    "type": "integer"
+                  },
+                  "discount": {
+                    "type": "integer"
+                  },
+                  "total_amount": {
+                    "type": "integer"
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "order_id",
+                  "product_id",
+                  "return_quantity",
+                  "return_amount",
+                  "taxes",
+                  "discount",
+                  "total_amount",
+                  "status"
+                ]
+              },
+              "example": {
+                "order_id": 2,
+                "product_id": 102,
+                "return_quantity": 1,
+                "return_amount": 50,
+                "taxes": 5,
+                "discount": 0,
+                "total_amount": 55,
+                "status": "Pending"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {},
+    "securitySchemes": {}
+  },
+  "servers": []
+}
+
+

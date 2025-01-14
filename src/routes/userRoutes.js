@@ -23,13 +23,10 @@ router.post('/create', async (req, res) => {
       is_active,
       status,
       referral_code,
-      phone_veried_at,
-      email_veried_at,
-      remember_token,
-      reset_token,
-      reset_token_expiry,
-      created_at,
-      updated_at
+      is_email_verified,
+      is_phone_verified,
+      phone_verified_at,
+      email_verified_at,
     } = req.body;
 
     // Check if user with the same email or phone already exists
@@ -60,11 +57,10 @@ router.post('/create', async (req, res) => {
       is_active,
       status,
       referral_code,
-      phone_veried_at,
-      email_veried_at,
-      remember_token,
-      reset_token,
-      reset_token_expiry,
+      is_email_verified,
+      is_phone_verified,
+      phone_verified_at,
+      email_verified_at,
     });
 
     res.status(201).json({ message: 'User created successfully!', user });
@@ -124,13 +120,10 @@ router.put('/:id', async (req, res) => {
       is_active,
       status,
       referral_code,
-      phone_veried_at,
-      email_veried_at,
-      remember_token,
-      reset_token,
-      reset_token_expiry,
-      created_at,
-      updated_at
+      is_email_verified,
+      is_phone_verified,
+      phone_verified_at,
+      email_verified_at,
     } = req.body;
 
     // Hash password if it's being updated
@@ -152,13 +145,10 @@ router.put('/:id', async (req, res) => {
       is_active,
       status,
       referral_code,
-      phone_veried_at,
-      email_veried_at,
-      remember_token,
-      reset_token,
-      reset_token_expiry,
-      created_at,
-      updated_at
+      is_email_verified,
+      is_phone_verified,
+      phone_verified_at,
+      email_verified_at,
     });
 
     res.status(200).json({ message: 'User updated successfully!', user });

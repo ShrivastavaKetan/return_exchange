@@ -1,0 +1,214 @@
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE DEFAULT NULL,
+    email_verify_token TEXT DEFAULT NULL,
+    is_email_verified INTEGER NOT NULL DEFAULT 0,
+    is_phone_verified INTEGER NOT NULL DEFAULT 0,
+    phone TEXT UNIQUE DEFAULT NULL,
+    otp TEXT DEFAULT NULL,
+    password TEXT DEFAULT NULL,
+    is_active INTEGER DEFAULT 1,
+    status INTEGER NOT NULL DEFAULT 0, -- User status (e.g., active, banned)
+    referral_code TEXT UNIQUE DEFAULT NULL,
+    phone_verified_at TIMESTAMP DEFAULT NULL,
+    email_verified_at TIMESTAMP DEFAULT NULL,
+    remember_token TEXT DEFAULT NULL,
+    reset_token TEXT DEFAULT NULL,
+    reset_token_expiry TIMESTAMP DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES user_roles(id)
+);
+
+CREATE TABLE discounts_charges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    coupon_discount REAL DEFAULT 0.00,
+    bank_discount REAL DEFAULT 0.00,
+    no_return_discount REAL DEFAULT 0.00,
+    cod_charges REAL DEFAULT 0.00,
+    shipping_charges REAL DEFAULT 0.00,
+    packing_charges REAL DEFAULT 0.00,
+    handling_charges REAL DEFAULT 0.00,
+    net_amount REAL NOT NULL, -- Final payable amount after all charges
+    gross_amount REAL NOT NULL, -- Original amount before discounts
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL, -- Vendor or seller ID
+    item_id INTEGER NOT NULL,
+    product_name TEXT NOT NULL,
+    brand_id INTEGER DEFAULT NULL,
+    packed_weight REAL DEFAULT NULL,
+    package_length REAL DEFAULT NULL,
+    package_breadth REAL DEFAULT NULL,
+    package_height REAL DEFAULT NULL,
+    volumetric_weight REAL DEFAULT NULL,
+    chargeable_weight REAL DEFAULT NULL,
+    is_made_in_india INTEGER DEFAULT 0,
+    is_hand_made INTEGER DEFAULT 0,
+    is_cash_on_delivery INTEGER DEFAULT 1,
+    is_customizable_product INTEGER DEFAULT 0,
+    delivery_by INTEGER DEFAULT 1, -- Days to deliver
+    return_policy_id INTEGER DEFAULT NULL,
+    exchange_policy_id INTEGER DEFAULT NULL,
+    hsn_code_id INTEGER DEFAULT NULL,
+    gst REAL DEFAULT NULL,
+    tag_price REAL DEFAULT NULL,
+    iz_commission REAL DEFAULT NULL,
+    no_return_discount REAL DEFAULT 0.00,
+    insurance_premium REAL DEFAULT 0.00,
+    variant_type INTEGER DEFAULT 0, -- E.g., size, color, etc.
+    minimum_purchase_quantity INTEGER DEFAULT 1,
+    low_stock_quantity_warning INTEGER DEFAULT 0,
+    product_description TEXT,
+    product_specification TEXT,
+    thumbnail_image_url TEXT DEFAULT NULL,
+    pdf_specification_url TEXT DEFAULT NULL,
+    video_url TEXT DEFAULT NULL,
+    is_active INTEGER DEFAULT 1,
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (hsn_code_id) REFERENCES hsn_codes(id),
+    FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE SET NULL
+);
+
+CREATE TABLE tax_amounts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    cgst_amount REAL NOT NULL DEFAULT 0.00,
+    sgst_amount REAL NOT NULL DEFAULT 0.00,
+    igst_amount REAL NOT NULL DEFAULT 0.00,
+    transaction_type TEXT CHECK(transaction_type IN ('Intra', 'Inter')) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE user_roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL, -- Role name (e.g., Admin, Seller, Buyer)
+    is_active INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_addresses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    manager_name TEXT DEFAULT NULL,
+    phone TEXT DEFAULT NULL,
+    address TEXT DEFAULT NULL,
+    landmark TEXT DEFAULT NULL,
+    state_id INTEGER DEFAULT NULL,
+    city_id INTEGER DEFAULT NULL,
+    postal_code TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    order_number TEXT UNIQUE NOT NULL,
+    order_status TEXT CHECK(order_status IN ('Pending', 'Shipped', 'Delivered', 'Cancelled')) NOT NULL DEFAULT 'Pending',
+    payment_status TEXT CHECK(payment_status IN ('Paid', 'Failed', 'Refunded', 'Pending')) NOT NULL DEFAULT 'Pending',
+    payment_mode TEXT CHECK(payment_mode IN ('Card', 'UPI', 'Wallet', 'COD')) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE product_orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    order_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    logistics_tracking_link TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tracking_links (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_id INTEGER NOT NULL,
+    tracking_url TEXT NOT NULL,
+    carrier TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES return_exchange_requests(id) ON DELETE CASCADE
+);
+
+CREATE TABLE communications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_id INTEGER NOT NULL,
+    communication_type TEXT CHECK(communication_type IN ('Email', 'SMS')) NOT NULL,
+    message TEXT NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES return_exchange_requests(id)
+);
+
+CREATE TABLE return_exchange_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    request_type TEXT CHECK(request_type IN ('Return', 'Exchange')) NOT NULL,
+    request_status TEXT CHECK(request_status IN ('Pending', 'In Progress', 'Approved', 'Rejected', 'Cancelled')) DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE order_returns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_id INTEGER NOT NULL, -- Links to the base table
+    return_quantity INTEGER NOT NULL,
+    return_amount REAL NOT NULL,
+    taxes REAL DEFAULT 0.00,
+    discount REAL DEFAULT 0.00,
+    total_amount REAL NOT NULL,
+    return_reason TEXT NOT NULL,
+    admin_decision TEXT CHECK(admin_decision IN ('Approved', 'Rejected', 'Escalated')) DEFAULT NULL,
+    seller_decision TEXT CHECK(seller_decision IN ('Accepted', 'Rejected', 'Pending')) DEFAULT NULL,
+    refund_status TEXT CHECK(refund_status IN ('Pending', 'Initiated', 'Issued')) DEFAULT 'Pending',
+    return_pickup_status TEXT CHECK(return_pickup_status IN ('Scheduled', 'In Transit', 'Completed')) DEFAULT NULL,
+    return_tracking_id TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES return_exchange_requests(id)
+);
+
+CREATE TABLE order_exchanges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_id INTEGER NOT NULL, -- Links to the base table
+    exchange_quantity INTEGER NOT NULL,
+    exchange_amount REAL NOT NULL,
+    taxes REAL DEFAULT 0.00,
+    discount REAL DEFAULT 0.00,
+    total_amount REAL NOT NULL,
+    exchange_reason TEXT NOT NULL,
+    admin_decision TEXT CHECK(admin_decision IN ('Approved', 'Rejected', 'Escalated')) DEFAULT NULL,
+    seller_decision TEXT CHECK(seller_decision IN ('Accepted', 'Rejected', 'Pending')) DEFAULT NULL,
+    exchange_pickup_status TEXT CHECK(exchange_pickup_status IN ('Scheduled', 'In Transit', 'Completed')) DEFAULT NULL,
+    exchange_delivery_status TEXT CHECK(exchange_delivery_status IN ('Pending', 'Dispatched', 'Delivered')) DEFAULT NULL,
+    exchange_tracking_id TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES return_exchange_requests(id)
+);

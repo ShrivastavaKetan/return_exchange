@@ -65,11 +65,11 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING(20),
         allowNull: true,
       },
-      phone_veried_at: {
+      phone_verified_at: {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      email_veried_at: {
+      email_verified_at: {
         type: DataTypes.DATE,
         allowNull: true,
       },
@@ -85,12 +85,12 @@ module.exports = (sequelize) => {
         type: DataTypes.BIGINT,
         allowNull: true,
       },
-      createdAt: {
+      created_at: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: DataTypes.NOW,
       },
-      updatedAt: {
+      updated_at: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: DataTypes.NOW,
@@ -101,8 +101,8 @@ module.exports = (sequelize) => {
       modelName: 'User',
       tableName: 'users',
       timestamps: true,
-      createdAt: 'createdAt',
-      updatedAt: 'updatedAt',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     }
   );
 
